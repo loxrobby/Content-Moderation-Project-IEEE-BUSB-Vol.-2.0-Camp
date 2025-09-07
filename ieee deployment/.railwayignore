@@ -1,0 +1,49 @@
+# Node.js files (frontend)
+node_modules/
+build/
+src/
+public/
+package.json
+package-lock.json
+craco.config.js
+
+# Python virtual environment
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Development files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test files
+test_*.py
+*_test.py
+
+# Documentation
+README.md
+DEPLOYMENT_GUIDE.md
+
+# Docker files (not needed for Railway)
+Dockerfile*
+docker-compose.yml
+nginx.conf
