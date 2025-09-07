@@ -1,0 +1,475 @@
+.analysis-result {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.result-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.result-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.result-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.result-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+}
+
+.verdict-section {
+  margin-bottom: 2rem;
+}
+
+.verdict-card {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.verdict-icon-container {
+  flex-shrink: 0;
+}
+
+.verdict-icon {
+  width: 48px;
+  height: 48px;
+}
+
+.verdict-icon.safe {
+  color: #10b981;
+}
+
+.verdict-icon.toxic {
+  color: #ef4444;
+}
+
+.verdict-icon.spam {
+  color: #f59e0b;
+}
+
+.verdict-content {
+  flex: 1;
+}
+
+.verdict-text {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.verdict-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.explanation-content {
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+.explanation-bold {
+  color: #ffffff;
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.adjustment-note {
+  color: #fbbf24;
+  font-size: 0.75rem;
+  font-style: italic;
+  margin-left: 0.25rem;
+}
+
+.risk-section {
+  margin-bottom: 2rem;
+}
+
+.risk-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.risk-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.risk-icon {
+  width: 20px;
+  height: 20px;
+  color: #60a5fa;
+  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.4));
+}
+
+.risk-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+}
+
+.risk-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.risk-score {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.score-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.score-label {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+.risk-level {
+  flex-shrink: 0;
+}
+
+.level-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.risk-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.risk-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.details-section {
+  margin-bottom: 1rem;
+}
+
+.details-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.details-icon {
+  width: 20px;
+  height: 20px;
+  color: #60a5fa;
+  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.4));
+}
+
+.details-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.detail-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 16px;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.detail-icon {
+  width: 16px;
+  height: 16px;
+  color: #60a5fa;
+  filter: drop-shadow(0 0 6px rgba(96, 165, 250, 0.4));
+}
+
+.detail-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-content {
+  text-align: center;
+}
+
+.detail-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.25rem;
+}
+
+.detail-subtitle {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.flags-section {
+  background: rgba(239, 68, 68, 0.1);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  margin-bottom: 1rem;
+}
+
+.flags-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fca5a5;
+  margin-bottom: 1rem;
+}
+
+.flag-group {
+  margin-bottom: 1rem;
+}
+
+.flag-group:last-child {
+  margin-bottom: 0;
+}
+
+.flag-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fca5a5;
+  margin-bottom: 0.5rem;
+}
+
+.flag-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.flag-tag {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.9);
+  border: 1px solid rgba(255,255,255,0.15);
+  transition: all 0.2s ease;
+}
+
+.flag-tag.offensive {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.flag-tag.spam {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.flag-tag.suspicious {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .result-card {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  
+  .result-title {
+    font-size: 1.75rem;
+  }
+  
+  .verdict-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .verdict-text {
+    font-size: 1.5rem;
+  }
+  
+  .risk-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .score-number {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .result-card {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+  
+  .result-title {
+    font-size: 1.5rem;
+  }
+  
+  .verdict-card {
+    padding: 1rem;
+  }
+  
+  .verdict-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .verdict-text {
+    font-size: 1.25rem;
+  }
+  
+  .score-number {
+    font-size: 1.75rem;
+  }
+  
+  .flag-tags {
+    justify-content: center;
+  }
+}
+
+.flag-tag.risk-factor {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #60a5fa;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  margin: 0.125rem;
+  border-radius: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/* Collapsible help section button hover */
+.flag-tag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+
+/* Detailed Analysis Section */
+.detailed-analysis-section {
+  margin-bottom: 20px;
+}
+
+.detailed-analysis-section .toggle-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.detailed-analysis-content {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive design for detailed analysis */
+@media (max-width: 768px) {
+  .detailed-analysis-content > div:first-child {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+}

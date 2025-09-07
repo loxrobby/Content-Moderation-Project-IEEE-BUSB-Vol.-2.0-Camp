@@ -1,0 +1,90 @@
+.footer {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 4rem;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 0 1rem;
+}
+
+.footer-brand { max-width: 400px; }
+
+/* removed row layout */
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.footer-logo-icon {
+  width: 32px;
+  height: 32px;
+  color: #60a5fa;
+  filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5));
+}
+
+.footer-logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  font-family: 'Bricolage Grotesque', sans-serif;
+}
+
+.footer-description {
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.footer-description.small { font-size: 0.9rem; }
+.footer-thanks { color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-top: 0.25rem; }
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem 0;
+  text-align: center;
+}
+
+.footer-copyright { color: rgba(255, 255, 255, 0.6); font-size: 0.9rem; }
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem 0 1.5rem;
+    text-align: center;
+  }
+  .footer-text-row { flex-direction: column; gap: 0.25rem; }
+}
+
+@media (max-width: 480px) {
+  .footer-content {
+    padding: 1.5rem 0 1rem;
+  }
+  
+  .footer-logo-text {
+    font-size: 1.25rem;
+  }
+  
+  .footer-logo-icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .footer-description {
+    font-size: 0.9rem;
+  }
+  
+  .footer-copyright {
+    font-size: 0.85rem;
+  }
+}
