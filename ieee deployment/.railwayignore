@@ -47,3 +47,5 @@ DEPLOYMENT_GUIDE.md
 Dockerfile*
 docker-compose.yml
 nginx.conf
+
+
