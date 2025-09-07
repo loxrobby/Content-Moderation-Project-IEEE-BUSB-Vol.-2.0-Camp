@@ -6,6 +6,8 @@ public/
 package.json
 package-lock.json
 craco.config.js
+Dockerfile*
+docker-compose.yml
 
 # Python virtual environment
 venv/
