@@ -1,0 +1,21 @@
+from setuptools import setup, find_packages
+
+setup(
+    name="content-moderation-ai",
+    version="1.0.0",
+    description="AI-powered content moderation system",
+    packages=find_packages(),
+    install_requires=[
+        "Flask==2.3.3",
+        "Flask-CORS==4.0.0",
+        "pandas==1.5.3",
+        "numpy==1.24.3",
+        "scikit-learn==1.3.0",
+        "nltk==3.8.1",
+        "joblib==1.3.2",
+        "gunicorn==21.2.0",
+        "python-dotenv==1.0.0",
+        "scipy==1.11.1",
+    ],
+    python_requires=">=3.9",
+)
