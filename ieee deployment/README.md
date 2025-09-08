@@ -230,11 +230,6 @@ Ensure the following model files are present in the parent directory:
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🆘 Support
-
-For support and questions:
-- Create an issue in the repository
-- Contact: contact@contentmodai.com
 
 ## 🙏 Acknowledgments
 
