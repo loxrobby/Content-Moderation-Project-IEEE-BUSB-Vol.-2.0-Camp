@@ -31,6 +31,16 @@ from comprehensive_spam_keywords import SPAM_KEYWORDS, SPAM_PATTERNS
 # Use the normalized toxic keywords list (3,480 words from badword_list.txt)
 OFFENSIVE_KEYWORDS = TOXIC_KEYWORDS
 
+# Additional common mild/medium offensive words to boost rule-based detection
+COMMON_MEDIUM_PROFANITY = {
+    # medium (≈25–30 points)
+    'bitch', 'bastard', 'asshole', 'douche', 'douchebag', 'prick'
+}
+COMMON_MILD_INSULTS = {
+    # mild (≈15–20 points)
+    'annoying', 'jerk', 'idiot', 'stupid', 'dumb', 'loser', 'crap', 'trash', 'lame', 'suck', 'sucks', 'gross'
+}
+
 # Offensive abbreviations and internet slang
 OFFENSIVE_ABBREVIATIONS = {
     # Strongly offensive
@@ -132,6 +142,12 @@ def check_offensive_keywords(text):
         if re.search(pattern, text_lower):
             found_words.append(word)
     
+    # Also check our added common profanity/insults
+    for word in COMMON_MEDIUM_PROFANITY.union(COMMON_MILD_INSULTS):
+        pattern = r'\b' + re.escape(word) + r'\b'
+        if re.search(pattern, text_lower):
+            found_words.append(word)
+    
     # Check for offensive abbreviations with sentence context (whole-word only)
     sentences = re.split(r'[.!?]+', text)
     for abbrev, full_form in OFFENSIVE_ABBREVIATIONS.items():
@@ -163,12 +179,16 @@ def check_offensive_keywords(text):
     for word in found_words:
         if word in ['nigger', 'nigga', 'chink', 'kike', 'spic', 'wetback', 'towelhead', 'gook', 'jap', 'slant', 'yellow', 'redskin', 'savage', 'coon', 'jungle bunny', 'porch monkey', 'tar baby', 'mammy', 'house nigger', 'field nigger', 'oreo', 'coconut', 'banana', 'beaner', 'greaser', 'taco', 'burrito', 'sand nigger', 'camel jockey', 'raghead', 'haji', 'slant eye', 'rice eater', 'dog eater', 'heeb', 'yid', 'christ killer', 'jew boy', 'jew girl', 'polack', 'dago', 'wop', 'guinea', 'mick', 'paddy', 'taig', 'gypsy', 'gyp', 'pikey', 'tinker', 'traveller']:
             offense_score += 50  # High severity racial slurs
-        elif word in ['shit', 'damn', 'bitch', 'asshole', 'bastard', 'cunt']:  # Removed 'fuck' since it's handled above
+        elif word in ['shit', 'damn', 'bitch', 'asshole', 'bastard', 'cunt']:
             offense_score += 30  # Medium severity profanity
         elif word in ['kill', 'murder', 'death', 'suicide', 'bomb', 'explode']:
             offense_score += 40  # High severity violence
         elif word in ['hate', 'hater', 'racist', 'sexist', 'homophobic']:
             offense_score += 25  # Medium severity hate speech
+        elif word in COMMON_MEDIUM_PROFANITY:
+            offense_score += 25  # Medium profanity bucket (e.g., douche, prick)
+        elif word in COMMON_MILD_INSULTS:
+            offense_score += 18  # Mild insults (e.g., annoying, jerk, dumb)
         elif word in ['wtf', 'stfu', 'gtfo', 'fml', 'omfg']:
             offense_score += 20  # Offensive abbreviations
         else:
