@@ -17,6 +17,12 @@ This system combines:
 - App: http://cmod.vvw.lol
 - Health: http://cmod.vvw.lol/api/health
 
+<p align="center">
+  <a href="http://cmod.vvw.lol">
+    <img src="assets/Website_pic.jpg" alt="Content Moderation AI – Website Screenshot" width="900">
+  </a>
+</p>
+
 ## 👥 Team A5 (Project 1)
 - 119 — Kamal Elsayed Elashry
 - 192 — Mohammed Ahmed Ezz Eldin
