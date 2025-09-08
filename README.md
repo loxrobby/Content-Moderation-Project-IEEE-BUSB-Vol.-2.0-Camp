@@ -17,6 +17,11 @@ This system combines:
 - App: http://cmod.vvw.lol
 - Health: http://cmod.vvw.lol/api/health
 
+## 👥 Team A5 (Project 1)
+- 119 — Kamal Elsayed Elashry
+- 191 — Mohammed Abdelfatah Nabil Abdelfatah
+- 287 — Youssef Hassan Abdelmoaty Hassan
+
 ## 📁 Project Structure
 
 ```
@@ -217,6 +222,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Scikit-learn for machine learning tools
 - Streamlit for web application framework
 - NLTK for natural language processing
+- Special thanks to **IEEE BUSB Vol. 2.0 Camp** for everything
 
 ## 📞 Support
 
