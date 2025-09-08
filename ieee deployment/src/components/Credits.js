@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Award, Code } from 'lucide-react';
+import { Users, Award } from 'lucide-react';
 import './Credits.css';
 
 const Credits = () => {
@@ -24,7 +24,7 @@ const Credits = () => {
   return (
     <div className="credits-container">
       <div className="credits-card">
-        <div className="header">
+        <div className="credits-icon">
           <Users className="icon" />
         </div>
         <h2 className="credits-title">Project Credits</h2>
@@ -35,23 +35,19 @@ const Credits = () => {
           </div>
         </div>
 
-        <div className="team-list">
+        {/* Members grid uses CSS classes that render the card boxes */}
+        <div className="members-grid">
           {teamMembers.map((member) => (
-            <div key={member.id} className="team-member">
-              <div className="member-main">
-                <div className="member-avatar">{member.name.charAt(0)}</div>
-                <div className="member-details">
-                  <h3 className="member-name">{member.name}</h3>
-                  <p className="member-id">ID: {member.studentId}</p>
-                </div>
+            <div key={member.id} className="member-card">
+              <div className="member-icon">
+                <Users className="icon" />
+              </div>
+              <div className="member-info">
+                <h3 className="member-name">{member.name}</h3>
+                <p className="member-id">ID: {member.studentId}</p>
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="footer-note">
-          <Code className="badge-icon" />
-          <span>Special thanks to IEEE BUSB Vol. 2.0 Camp</span>
         </div>
       </div>
     </div>
