@@ -75,10 +75,51 @@ python app.py
 # API: http://localhost:5000
 ```
 
-### Option 3: Free Online Deployment
-1. Follow the **DEPLOYMENT_GUIDE.md** in the `ieee deployment/` folder
-2. Deploy to Railway, Render, or Heroku for free
-3. Get a shareable URL like: `https://your-app.railway.app`
+## 🛠️ Installation & Setup
+
+### 1. Backend Setup
+```bash
+# Navigate to deployment directory
+cd "ieee deployment"
+
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
+source venv/bin/activate
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Ensure model files exist alongside app.py
+# Required files:
+# - ensemble_vectorizer.pkl
+# - ensemble_model.pkl
+# - ensemble_label_encoder.pkl
+# - ensemble_numerical_features.pkl
+# - ensemble_toxicity_threshold.pkl
+```
+
+### 2. Frontend Setup
+```bash
+# From ieee deployment/
+npm install
+
+# Start development server
+npm start
+```
+
+### 3. Running the Application
+```bash
+# Terminal 1: Start Flask backend
+python app.py
+
+# Terminal 2: Start React frontend
+npm start
+```
 
 ## 📊 System Components
 
