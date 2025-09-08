@@ -125,6 +125,8 @@ python app.py
 
 # Terminal 2: Start React frontend
 npm start
+
+# Or use the live site: http://cmod.vvw.lol
 ```
 
 ## 📊 System Components
@@ -228,12 +230,6 @@ print(f"Verdict: {result['final_verdict']}")
 print(f"Risk Score: {result['risk_score']}")
 ```
 
-### Web Interface
-1. Open the Streamlit app
-2. Enter text in the text area
-3. Click "Analyze Text"
-4. View results with detailed breakdown
-
 ## 🛠️ Customization
 
 ### Adding New Rules
@@ -280,7 +276,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - Dataset provided for content moderation research
 - Scikit-learn for machine learning tools
-- Streamlit for web application framework
 - NLTK for natural language processing
 - Special thanks to **IEEE BUSB Vol. 2.0 Camp** for everything
 
