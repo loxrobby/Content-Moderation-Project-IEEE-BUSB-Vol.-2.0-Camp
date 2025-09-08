@@ -1,6 +1,6 @@
 # Content Moderation AI System
 
-[Live Demo](http://cmod.vvw.lol) · [API Health](http://cmod.vvw.lol/api/health)
+[Live Demo](http://cmod.vvw.lol) 
 
 A comprehensive, production-ready Content Moderation System that classifies text into 'Safe', 'Toxic', or 'Spam' categories using advanced machine learning (70% weight) and rule-based detection (30% weight).
 
@@ -15,7 +15,7 @@ This system combines:
 
 ## 🌐 Live Deployment
 - App: http://cmod.vvw.lol
-- Health: http://cmod.vvw.lol/api/health
+
 
 <p align="center">
   <a href="http://cmod.vvw.lol">
