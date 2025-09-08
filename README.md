@@ -19,7 +19,7 @@ This system combines:
 
 <p align="center">
   <a href="http://cmod.vvw.lol">
-    <img src="assets/Website_pic.jpg" alt="Content Moderation AI – Website Screenshot" width="900">
+    <img src="Assets/Website_pic.jpg" alt="Content Moderation AI – Website Screenshot" width="900">
   </a>
 </p>
 
