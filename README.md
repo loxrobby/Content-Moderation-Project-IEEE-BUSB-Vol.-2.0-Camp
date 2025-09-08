@@ -19,7 +19,7 @@ This system combines:
 
 ## 👥 Team A5 (Project 1)
 - 119 — Kamal Elsayed Elashry
-- 191 — Mohammed Abdelfatah Nabil Abdelfatah
+- 192 — Mohammed Ahmed Ezz Eldin
 - 287 — Youssef Hassan Abdelmoaty Hassan
 
 ## 📁 Project Structure
@@ -97,24 +97,37 @@ python app.py
 
 ### 3. Machine Learning Classifier (`03_Machine_Learning_Classifier.ipynb`)
 - **TF-IDF vectorization** for text features
-- **Multiple ML models**: Naive Bayes, Logistic Regression, SVM, Decision Tree, Random Forest, XGBoost
+- **Multiple ML models**: Naive Bayes, Logistic Regression, SVM, Random Forest, XGBoost
 - **Model evaluation** and comparison
 - **Ensemble model** creation for highest accuracy
 - **Model persistence** for deployment
 
-### 4. Risk Assessment Engine (`04_Risk_Assessment_Engine.ipynb`)
-- **Combines rule-based and ML outputs**
-- **Weighted scoring system** (70% ML, 30% rules)
-- **Final decision logic** with risk thresholds
-- **Comprehensive analysis** with detailed breakdown
+## 🧪 ML Workflow, Results, and Ensemble (from notebooks)
 
-### 5. Production Web Application (`ieee deployment/`)
-- **Modern React frontend** with beautiful UI
-- **Flask API backend** with ML models
-- **Real-time text analysis** with instant results
-- **Detailed risk assessment** with ML/rule breakdown
-- **Production-ready** with deployment configurations
-- **Free hosting ready** for Railway, Render, Heroku
+- Data split: stratified train/validation/test; simple leakage-safe preprocessing.
+- Vectorization: TF‑IDF on cleaned text. Label encoding for targets.
+- Models trained and tuned with strong regularization and class balancing.
+
+Model metrics (test / validation):
+- Linear SVM (Calibrated): Acc 0.8998 / 0.9000, F1‑macro 0.7675, F1‑weighted 0.8898
+- Naive Bayes (Multinomial): Acc 0.8679 / 0.8678, F1‑macro 0.5874, F1‑weighted 0.8246
+- Logistic Regression: Acc 0.8530 / 0.8539, F1‑macro 0.7599, F1‑weighted 0.8641
+- Random Forest: Acc 0.8273 / 0.8271, F1‑macro 0.6993, F1‑weighted 0.8361
+- XGBoost: Acc 0.8264 / 0.8271, F1‑macro 0.6541, F1‑weighted 0.8243
+
+Ensemble (soft voting of top‑3 by validation acc: Linear SVM, Naive Bayes, Logistic Regression):
+- Test Acc: 0.8993
+- Val Acc:  0.8991
+- F1‑macro: reported in notebook pipeline alongside per‑model F1 (comparable to SVM)
+- 5‑fold CV Acc (train): reported for each model; ensemble built after ranking by Val Acc
+
+Notes:
+- Overfitting check: All models show near‑zero overfit gap (|Test–Val| ≈ 0.0–0.001).
+- Confusion matrices and feature importance (tree models) are included in the notebook.
+
+How the ensemble is used in production:
+- We persist the trained ensemble and TF‑IDF vectorizer (joblib) and load them in Flask.
+- Final decision blends ML score and rule‑based score (weighted), with hard rules for explicit content and spam.
 
 ## 🎨 Features
 
