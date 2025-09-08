@@ -52,6 +52,10 @@ Content Moderation Project 1 IEEE/
 │   └── .gitignore                       # Git ignore rules
 ```
 
+## 📦 Dataset
+- We used the "Advanced" dataset curated for this project.
+- Download link: [`Google Drive Folder`](https://drive.google.com/drive/folders/1wi3bgxTaNLY1AJMXdFxHHCrb1d4DGq9z)
+
 ## 🚀 Quick Start
 
 ### Option 1: Development & Training
@@ -145,7 +149,9 @@ npm start
 - **Master function** that combines all rules
 
 ### 3. Machine Learning Classifier (`03_Machine_Learning_Classifier.ipynb`)
-- **TF-IDF vectorization** for text features
+- **TF-IDF vectorization** for text features (max_features = 10,000)
+- Effective feature space during training: **10,000 TF‑IDF terms** (+ optional numerical features when evaluated in notebooks).
+- **Data leakage fix**: We perform train/val/test split first, then fit the TF‑IDF vectorizer only on the training set and transform validation/test separately. This prevents information leakage from validation/test into training.
 - **Multiple ML models**: Naive Bayes, Logistic Regression, SVM, Random Forest, XGBoost
 - **Model evaluation** and comparison
 - **Ensemble model** creation for highest accuracy
@@ -154,7 +160,7 @@ npm start
 ## 🧪 ML Workflow, Results, and Ensemble (from notebooks)
 
 - Data split: stratified train/validation/test; simple leakage-safe preprocessing.
-- Vectorization: TF‑IDF on cleaned text. Label encoding for targets.
+- Vectorization: TF‑IDF on cleaned text (10,000 features).
 - Models trained and tuned with strong regularization and class balancing.
 
 Model metrics (test / validation):
