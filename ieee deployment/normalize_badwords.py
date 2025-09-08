@@ -1,0 +1,319 @@
+#!/usr/bin/env python3
+"""
+Bad Words List Normalizer
+=========================
+
+This script normalizes a bad words list from various formats:
+- JSON arrays
+- Comma-separated values
+- Newline-separated values
+- Mixed formats
+
+It removes duplicates, standardizes formatting, and creates clean lists
+for both toxic and spam content detection.
+"""
+
+import json
+import re
+import os
+from typing import List, Set, Dict
+
+def clean_word(word: str) -> str:
+    """
+    Clean and normalize a single word.
+    """
+    if not word:
+        return ""
+    
+    # Remove quotes, brackets, and extra whitespace
+    word = word.strip().strip('"\'[]{}()')
+    
+    # Convert to lowercase
+    word = word.lower()
+    
+    # Remove extra spaces and special characters at start/end
+    word = re.sub(r'^[^\w]+|[^\w]+$', '', word)
+    
+    # Skip empty words or very short words (less than 2 characters)
+    if len(word) < 2:
+        return ""
+    
+    return word
+
+def parse_json_format(content: str) -> List[str]:
+    """
+    Parse JSON array format.
+    """
+    try:
+        # Try to parse as JSON
+        data = json.loads(content)
+        if isinstance(data, list):
+            return [clean_word(str(item)) for item in data]
+    except (json.JSONDecodeError, ValueError):
+        pass
+    return []
+
+def parse_comma_separated(content: str) -> List[str]:
+    """
+    Parse comma-separated format.
+    """
+    words = []
+    for line in content.split('\n'):
+        line = line.strip()
+        if ',' in line and not line.startswith('[') and not line.startswith('{'):
+            # Split by comma and clean each word
+            line_words = [clean_word(word) for word in line.split(',')]
+            words.extend(line_words)
+    return words
+
+def parse_newline_separated(content: str) -> List[str]:
+    """
+    Parse newline-separated format.
+    """
+    words = []
+    for line in content.split('\n'):
+        line = line.strip()
+        if line and not line.startswith('[') and not line.startswith('{'):
+            # Check if this line has many commas (likely a comma-separated list)
+            if line.count(',') > 5:  # If more than 5 commas, it's likely a comma-separated list
+                # Split by comma and clean each word
+                line_words = [clean_word(word) for word in line.split(',')]
+                words.extend(line_words)
+            else:
+                # Clean the word as a single entry
+                word = clean_word(line)
+                if word:
+                    words.append(word)
+    return words
+
+def categorize_words(words: List[str]) -> Dict[str, List[str]]:
+    """
+    Categorize words - for now, all words from badword_list.txt are treated as toxic.
+    Spam categorization will be handled separately later.
+    """
+    # All words from badword_list.txt are toxic words
+    toxic_words = words.copy()
+    spam_words = []
+    
+    return {
+        'toxic': toxic_words,
+        'spam': spam_words
+    }
+
+def normalize_badwords_file(input_file: str, output_file: str = None) -> Dict[str, List[str]]:
+    """
+    Normalize the bad words file and return categorized words.
+    """
+    if not os.path.exists(input_file):
+        print(f"Error: Input file '{input_file}' not found!")
+        return {'toxic': [], 'spam': []}
+    
+    print(f"Reading bad words from: {input_file}")
+    
+    with open(input_file, 'r', encoding='utf-8', errors='ignore') as f:
+        content = f.read()
+    
+    print(f"Original file size: {len(content)} characters")
+    
+    all_words = []
+    
+    # Try different parsing methods
+    print("Parsing JSON format...")
+    json_words = parse_json_format(content)
+    if json_words:
+        print(f"Found {len(json_words)} words in JSON format")
+        all_words.extend(json_words)
+    
+    print("Parsing comma-separated format...")
+    comma_words = parse_comma_separated(content)
+    if comma_words:
+        print(f"Found {len(comma_words)} words in comma-separated format")
+        all_words.extend(comma_words)
+    
+    print("Parsing newline-separated format...")
+    newline_words = parse_newline_separated(content)
+    if newline_words:
+        print(f"Found {len(newline_words)} words in newline-separated format")
+        all_words.extend(newline_words)
+    
+    # Remove duplicates and empty words
+    print("Removing duplicates and cleaning words...")
+    unique_words = list(set([word for word in all_words if word]))
+    
+    print(f"Total unique words found: {len(unique_words)}")
+    
+    # Categorize words
+    print("Categorizing words into toxic and spam...")
+    categorized = categorize_words(unique_words)
+    
+    print(f"Toxic words: {len(categorized['toxic'])}")
+    print(f"Spam words: {len(categorized['spam'])}")
+    
+    # Save to output file if specified
+    if output_file:
+        print(f"Saving normalized words to: {output_file}")
+        
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write("# Normalized Bad Words List\n")
+            f.write("# Generated by normalize_badwords.py\n\n")
+            
+            f.write("# TOXIC WORDS\n")
+            f.write("# ===========\n")
+            for word in sorted(categorized['toxic']):
+                f.write(f'"{word}",\n')
+            
+            f.write("\n# SPAM WORDS\n")
+            f.write("# ==========\n")
+            for word in sorted(categorized['spam']):
+                f.write(f'"{word}",\n')
+        
+        print(f"Saved {len(categorized['toxic'])} toxic words and {len(categorized['spam'])} spam words")
+    
+    return categorized
+
+def expand_spam_patterns() -> List[str]:
+    """
+    Generate additional spam patterns and keywords.
+    """
+    spam_expansions = [
+        # Financial spam
+        'loan', 'debt', 'credit', 'mortgage', 'refinance', 'cash', 'money',
+        'dollar', 'euro', 'pound', 'currency', 'exchange', 'rate', 'interest',
+        'finance', 'financial', 'banking', 'investment', 'trading', 'stock',
+        'market', 'portfolio', 'wealth', 'rich', 'millionaire', 'billionaire',
+        
+        # Crypto and digital currency
+        'bitcoin', 'btc', 'ethereum', 'eth', 'crypto', 'cryptocurrency',
+        'blockchain', 'wallet', 'mining', 'token', 'coin', 'altcoin',
+        'defi', 'nft', 'metaverse', 'web3', 'dao', 'smart contract',
+        
+        # Gambling and casino
+        'casino', 'gambling', 'bet', 'betting', 'poker', 'blackjack',
+        'roulette', 'slot', 'slots', 'lottery', 'lotto', 'jackpot',
+        'bonus', 'reward', 'prize', 'win', 'winner', 'lucky', 'chance',
+        
+        # Health and medical spam
+        'viagra', 'cialis', 'pharmacy', 'prescription', 'medication',
+        'supplement', 'vitamin', 'weight loss', 'diet', 'fitness',
+        'muscle', 'protein', 'testosterone', 'hormone', 'therapy',
+        
+        # Dating and adult spam
+        'dating', 'single', 'marriage', 'relationship', 'love', 'romance',
+        'adult', 'porn', 'sex', 'escort', 'massage', 'hookup', 'meet',
+        
+        # Technology spam
+        'software', 'app', 'download', 'install', 'update', 'upgrade',
+        'virus', 'malware', 'security', 'antivirus', 'firewall', 'hack',
+        'password', 'login', 'account', 'verify', 'confirm', 'activate',
+        
+        # Business and MLM
+        'business', 'opportunity', 'work from home', 'remote', 'freelance',
+        'income', 'earn', 'profit', 'revenue', 'sales', 'marketing',
+        'network', 'recruit', 'join', 'team', 'leader', 'success',
+        
+        # Travel and vacation
+        'travel', 'vacation', 'holiday', 'trip', 'flight', 'hotel',
+        'booking', 'reservation', 'discount', 'package', 'deal',
+        
+        # Education and courses
+        'course', 'training', 'certificate', 'diploma', 'degree',
+        'education', 'learn', 'study', 'university', 'college',
+        
+        # Real estate
+        'property', 'house', 'apartment', 'rent', 'lease', 'buy',
+        'sell', 'real estate', 'mortgage', 'home', 'land',
+        
+        # Automotive
+        'car', 'auto', 'vehicle', 'truck', 'motorcycle', 'insurance',
+        'warranty', 'service', 'repair', 'parts', 'accessories',
+        
+        # Common spam phrases
+        'act now', 'limited time', 'while supplies last', 'first come first served',
+        'no obligation', 'risk free', 'guaranteed', 'satisfaction guaranteed',
+        'money back', 'refund', 'cancel anytime', 'unsubscribe',
+        'click here', 'learn more', 'find out more', 'get started',
+        'sign up', 'register now', 'join today', 'don\'t miss out'
+    ]
+    
+    return spam_expansions
+
+def main():
+    """
+    Main function to normalize bad words and expand spam patterns.
+    """
+    input_file = "badword_list.txt"
+    output_file = "normalized_badwords.txt"
+    
+    print("=" * 60)
+    print("BAD WORDS LIST NORMALIZER")
+    print("=" * 60)
+    
+    # Normalize the existing bad words
+    categorized = normalize_badwords_file(input_file, output_file)
+    
+    # For now, we're only processing toxic words from badword_list.txt
+    # Spam patterns will be handled separately later
+    print("\nProcessing toxic words only (spam patterns will be handled separately)...")
+    
+    # Create final categorized list
+    final_categorized = {
+        'toxic': categorized['toxic'],
+        'spam': categorized['spam']  # Empty for now
+    }
+    
+    # Save final lists
+    final_output = "final_badwords_categorized.txt"
+    with open(final_output, 'w', encoding='utf-8') as f:
+        f.write("# Final Categorized Bad Words List\n")
+        f.write("# Generated by normalize_badwords.py\n\n")
+        
+        f.write("# TOXIC WORDS\n")
+        f.write("# ===========\n")
+        for word in sorted(final_categorized['toxic']):
+            f.write(f'"{word}",\n')
+        
+        f.write("\n# SPAM WORDS (Expanded)\n")
+        f.write("# ====================\n")
+        for word in sorted(final_categorized['spam']):
+            f.write(f'"{word}",\n')
+    
+    print(f"\nFinal results saved to: {final_output}")
+    print(f"Total toxic words: {len(final_categorized['toxic'])}")
+    print(f"Total spam words: {len(final_categorized['spam'])} (will be handled separately)")
+    
+    # Generate Python code for Flask app
+    generate_flask_code(final_categorized)
+    
+    print("\n" + "=" * 60)
+    print("TOXIC WORDS NORMALIZATION COMPLETE!")
+    print("=" * 60)
+    print("Note: Spam patterns will be handled in a separate process.")
+
+def generate_flask_code(categorized: Dict[str, List[str]]):
+    """
+    Generate Python code for the Flask app with the normalized word lists.
+    """
+    code_output = "flask_badwords_code.py"
+    
+    with open(code_output, 'w', encoding='utf-8') as f:
+        f.write('"""\n')
+        f.write('Normalized Bad Words Lists for Flask App\n')
+        f.write('Generated by normalize_badwords.py\n')
+        f.write('"""\n\n')
+        
+        f.write('# TOXIC KEYWORDS LIST\n')
+        f.write('TOXIC_KEYWORDS = [\n')
+        for word in sorted(categorized['toxic']):
+            f.write(f'    "{word}",\n')
+        f.write(']\n\n')
+        
+        f.write('# SPAM KEYWORDS LIST (Expanded)\n')
+        f.write('SPAM_KEYWORDS = [\n')
+        for word in sorted(categorized['spam']):
+            f.write(f'    "{word}",\n')
+        f.write(']\n')
+    
+    print(f"Flask code generated: {code_output}")
+
+if __name__ == "__main__":
+    main()

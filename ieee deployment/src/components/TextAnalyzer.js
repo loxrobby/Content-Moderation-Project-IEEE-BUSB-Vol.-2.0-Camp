@@ -1,11 +1,33 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Loader, FileText } from 'lucide-react';
+import { Send, Loader, FileText, Lightbulb } from 'lucide-react';
 import './TextAnalyzer.css';
 
 const TextAnalyzer = ({ onAnalyze, isAnalyzing }) => {
   const [text, setText] = useState('');
   const [charCount, setCharCount] = useState(0);
+
+  // Categorized suggestions
+  const suggestions = {
+    safe: [
+      "This is a nice day and I hope everyone is well",
+      "I disagree with your opinion but respect it",
+      "Great work on this project, well done!",
+      "Thank you for sharing your thoughts on this topic"
+    ],
+    toxic: [
+      "You are stupid and don't know anything",
+      "Fuck you bitch, go to hell",
+      "Go kill yourself you worthless piece of shit",
+      "You're an idiot and I hate you"
+    ],
+    spam: [
+      "Check out this amazing deal at http://fake-deals-now.com! Free money guaranteed!",
+      "Click here for free money! Limited time offer!",
+      "URGENT: You've won $1000! Click now to claim!",
+      "Buy now! Amazing deals! Don't miss out!"
+    ]
+  };
 
   const handleTextChange = (e) => {
     const newText = e.target.value;
@@ -35,6 +57,11 @@ const TextAnalyzer = ({ onAnalyze, isAnalyzing }) => {
     }
   };
 
+  const handleSuggestionClick = (suggestionText) => {
+    setText(suggestionText);
+    setCharCount(suggestionText.length);
+  };
+
   const isTextValid = text.trim().length > 0;
   const isOverLimit = charCount > 1000;
 
@@ -55,31 +82,63 @@ const TextAnalyzer = ({ onAnalyze, isAnalyzing }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="analyzer-form">
-          <div className="input-group">
-            <textarea
-              value={text}
-              onChange={handleTextChange}
-              onKeyDown={handleKeyDown}
-              placeholder="Enter text to analyze for toxicity, spam, or safety... (Press Enter to submit)"
-              className={`text-input ${isOverLimit ? 'error' : ''}`}
-              rows={6}
-              maxLength={2000}
-              disabled={isAnalyzing}
-            />
-            <div className="input-footer">
-              <span className={`char-count ${isOverLimit ? 'error' : ''}`}>
-                {charCount}/2000 characters
-              </span>
-              {text && (
-                <button
-                  type="button"
-                  onClick={handleClear}
-                  className="clear-btn"
-                  disabled={isAnalyzing}
-                >
-                  Clear
-                </button>
-              )}
+          <div className="input-container">
+            <div className="input-group">
+              <textarea
+                value={text}
+                onChange={handleTextChange}
+                onKeyDown={handleKeyDown}
+                placeholder="Enter text to analyze for toxicity, spam, or safety... (Press Enter to submit)"
+                className={`text-input ${isOverLimit ? 'error' : ''}`}
+                rows={6}
+                maxLength={2000}
+                disabled={isAnalyzing}
+              />
+              <div className="input-footer">
+                <span className={`char-count ${isOverLimit ? 'error' : ''}`}>
+                  {charCount}/2000 characters
+                </span>
+                {text && (
+                  <button
+                    type="button"
+                    onClick={handleClear}
+                    className="clear-btn"
+                    disabled={isAnalyzing}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="suggestions-panel">
+              <div className="suggestions-header">
+                <Lightbulb className="suggestions-icon" />
+                <h3 className="suggestions-title">Try These Examples</h3>
+              </div>
+              
+              <div className="suggestions-categories">
+                {Object.entries(suggestions).map(([category, items]) => (
+                  <div key={category} className="suggestion-category">
+                    <h4 className={`category-title category-${category}`}>
+                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </h4>
+                    <div className="suggestion-items">
+                      {items.map((suggestion, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          className={`suggestion-item suggestion-${category}`}
+                          onClick={() => handleSuggestionClick(suggestion)}
+                          disabled={isAnalyzing}
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

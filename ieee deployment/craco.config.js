@@ -2,7 +2,12 @@ const path = require('path');
 
 module.exports = {
   devServer: {
-    port: 3000
+    port: 3000,
+    host: '0.0.0.0',
+    allowedHosts: 'all',
+    client: {
+      webSocketURL: 'auto://0.0.0.0:0/ws'
+    }
   },
   webpack: {
     configure: (webpackConfig) => {

@@ -14,11 +14,11 @@ const Header = () => {
           
           <nav className="nav">
             <div className="nav-spacer"></div>
-            <div className="nav-item">
+            <div className="nav-item nav-item-desktop">
               <Brain className="nav-icon" />
               <span>AI Analysis</span>
             </div>
-            <div className="nav-item">
+            <div className="nav-item nav-item-desktop">
               <Zap className="nav-icon" />
               <span>Real-time</span>
             </div>

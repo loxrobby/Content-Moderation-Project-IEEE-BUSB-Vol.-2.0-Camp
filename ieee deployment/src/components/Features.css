@@ -256,15 +256,34 @@
   
   .capabilities-section {
     padding: 1.5rem;
+    margin: 0 0.5rem;
   }
   
   .capabilities-title {
     font-size: 1.5rem;
   }
   
+  .capabilities-subtitle {
+    font-size: 0.9rem;
+  }
+  
   .capability-card {
     flex-direction: column;
     text-align: center;
     gap: 0.75rem;
+  }
+  
+  .capability-icon-container {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .capability-icon {
+    width: 24px;
+    height: 24px;
   }
 }

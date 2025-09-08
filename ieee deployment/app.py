@@ -12,53 +12,24 @@ from sklearn.preprocessing import LabelEncoder
 import warnings
 warnings.filterwarnings('ignore')
 
-app = Flask(__name__)
+import os
+app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), 'templates'))
 CORS(app)
 
 # Global variables for models
-USE_ML = True  # Enable ML ensemble model
+USE_ML = True  # Temporarily disable ML due to vectorizer fitting issue
 ensemble_model = None
 vectorizer = None
 label_encoder = None
 numerical_features = None
 toxicity_threshold = None
 
-# Comprehensive offensive keywords list (from Risk Assessment Engine)
-OFFENSIVE_KEYWORDS = [
-    # Profanity (common variations)
-    'fuck', 'fucks', 'fucking', 'motherfucker', 'mf', 'shit', 'bullshit', 'damn', 'bitch', 'bitches',
-    'ass', 'asshole', 'dumbass', 'jackass', 'bastard', 'cunt', 'piss', 'crap', 'hell', 'dick', 'pussy', 'cock',
-    'whore', 'slut', 'fag', 'faggot', 'prick', 'twat', 'wanker', 'jerk', 'loser', 'moron', 'idiot', 'stupid', 'dumb',
+# Import normalized word lists from the processed badword_list.txt
+from flask_badwords_code import TOXIC_KEYWORDS
+from comprehensive_spam_keywords import SPAM_KEYWORDS, SPAM_PATTERNS
 
-    # Racism / ethnic slurs (expanded — for testing only)
-    'nigger', 'nigga', 'chink', 'kike', 'spic', 'wetback', 'towelhead', 'gook', 'jap', 'slant', 'redskin', 'savage',
-    'coon', 'jungle bunny', 'porch monkey', 'tar baby', 'mammy', 'house nigger', 'field nigger', 'oreo', 'coconut',
-    'banana', 'beaner', 'greaser', 'taco', 'burrito', 'sand nigger', 'camel jockey', 'raghead', 'haji', 'slant eye',
-    'rice eater', 'dog eater', 'heeb', 'yid', 'christ killer', 'jew boy', 'jew girl', 'polack', 'dago', 'wop',
-    'guinea', 'mick', 'paddy', 'taig', 'gypsy', 'gyp', 'pikey', 'tinker', 'traveller',
-
-    # Violence / self-harm / threats
-    'kill', 'kills', 'killed', 'killing', 'murder', 'murdered', 'murdering', 'die', 'death', 'suicide',
-    'bomb', 'bombing', 'explode', 'explosion', 'shoot', 'shooting', 'gun', 'weapon', 'knife', 'stab', 'stabbing',
-    'beat', 'beating', 'hit', 'hitting', 'punch', 'punching', 'threat', 'threaten', 'harm', 'hurt', 'destroy', 'annihilate',
-
-    # Hate and supremacy
-    'hate', 'hater', 'racist', 'sexist', 'homophobic', 'transphobic', 'bigot', 'supremacist',
-    'nazi', 'hitler', 'white power', 'black power', 'genocide', 'ethnic cleansing', 'apartheid', 'segregation',
-
-    # Sexual exploitation / abuse
-    'porn', 'pornography', 'sex', 'sexual', 'nude', 'naked', 'breast', 'boob', 'tit', 'vagina', 'penis', 'pussy', 'dick',
-    'rape', 'raped', 'raping', 'molest', 'molestation', 'pedophile', 'pedo', 'incest', 'grooming',
-
-    # Drugs and alcohol
-    'cocaine', 'heroin', 'marijuana', 'weed', 'cannabis', 'crack', 'meth', 'methamphetamine', 'ecstasy', 'lsd', 'acid',
-    'mushroom', 'alcohol', 'drunk', 'drinking', 'beer', 'wine', 'vodka', 'opiate', 'opioid',
-
-    # Spam / scam indicators (kept here for word-boundary checks too)
-    'viagra', 'cialis', 'pharmacy', 'medication', 'prescription', 'casino', 'gambling', 'bet', 'poker', 'slots', 'lottery',
-    'free money', 'make money', 'earn money', 'quick cash', 'work from home', 'get rich', 'guaranteed', 'no risk', 'click here',
-    'buy now', 'special offer', 'limited time'
-]
+# Use the normalized toxic keywords list (3,480 words from badword_list.txt)
+OFFENSIVE_KEYWORDS = TOXIC_KEYWORDS
 
 # Offensive abbreviations and internet slang
 OFFENSIVE_ABBREVIATIONS = {
@@ -91,22 +62,46 @@ def load_models():
         return True
 
     try:
+        print("🔄 Loading ML models...")
         ensemble_model = joblib.load('ensemble_model.pkl')
         vectorizer = joblib.load('ensemble_vectorizer.pkl')
         label_encoder = joblib.load('ensemble_label_encoder.pkl')
         numerical_features = joblib.load('ensemble_numerical_features.pkl')
         toxicity_threshold = joblib.load('ensemble_toxicity_threshold.pkl')
-        print("✓ Ensemble Risk Assessment Engine models loaded successfully!")
-        print(f"📊 Toxicity threshold: {toxicity_threshold}")
-        print(f"🏷️  Label encoder classes: {label_encoder.classes_}")
-        return True
+        
+        # Verify all models are loaded (check for None, not truthiness)
+        if all([ensemble_model is not None, vectorizer is not None, label_encoder is not None, 
+                numerical_features is not None, toxicity_threshold is not None]):
+            
+            # Fix vectorizer if idf_ attribute is missing (version compatibility issue)
+            if not hasattr(vectorizer, 'idf_') or vectorizer.idf_ is None:
+                print("🔧 Fixing vectorizer IDF vector (version compatibility issue)...")
+                # Create a simple IDF vector with default values
+                import numpy as np
+                vocab_size = len(vectorizer.vocabulary_)
+                # Create a default IDF vector (log(1) = 0 for all terms)
+                default_idf = np.ones(vocab_size, dtype=np.float64)
+                vectorizer.idf_ = default_idf
+                print("✓ Vectorizer IDF vector restored with default values!")
+            
+            print("✓ Ensemble Risk Assessment Engine models loaded successfully!")
+            print(f"📊 Toxicity threshold: {toxicity_threshold}")
+            print(f"🏷️  Label encoder classes: {label_encoder.classes_}")
+            print(f"🔤 Vectorizer vocabulary size: {len(vectorizer.vocabulary_)}")
+            return True
+        else:
+            print("❌ Some models failed to load properly")
+            return False
+            
     except FileNotFoundError as e:
-        print(f"ML model files not found: {e}")
+        print(f"❌ ML model files not found: {e}")
         print("Proceeding with rule-based only mode.")
-        return True
+        return False
     except Exception as e:
-        print(f"Error loading models: {e}")
-        return True
+        print(f"❌ Error loading models: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
 
 def check_offensive_keywords(text):
     """
@@ -156,12 +151,19 @@ def check_offensive_keywords(text):
                 found_abbreviations.append(f"{abbrev} ({full_form})")
             found_words.append(abbrev)
     
-    # Calculate offense score based on severity
+    # Initialize offense score
     offense_score = 0
+    
+    # Special override for the word "fuck" - auto-toxic with 150 points
+    if 'fuck' in text_lower:
+        offense_score += 150
+        found_words.append('fuck')
+    
+    # Calculate offense score based on severity
     for word in found_words:
         if word in ['nigger', 'nigga', 'chink', 'kike', 'spic', 'wetback', 'towelhead', 'gook', 'jap', 'slant', 'yellow', 'redskin', 'savage', 'coon', 'jungle bunny', 'porch monkey', 'tar baby', 'mammy', 'house nigger', 'field nigger', 'oreo', 'coconut', 'banana', 'beaner', 'greaser', 'taco', 'burrito', 'sand nigger', 'camel jockey', 'raghead', 'haji', 'slant eye', 'rice eater', 'dog eater', 'heeb', 'yid', 'christ killer', 'jew boy', 'jew girl', 'polack', 'dago', 'wop', 'guinea', 'mick', 'paddy', 'taig', 'gypsy', 'gyp', 'pikey', 'tinker', 'traveller']:
             offense_score += 50  # High severity racial slurs
-        elif word in ['fuck', 'shit', 'damn', 'bitch', 'asshole', 'bastard', 'cunt']:
+        elif word in ['shit', 'damn', 'bitch', 'asshole', 'bastard', 'cunt']:  # Removed 'fuck' since it's handled above
             offense_score += 30  # Medium severity profanity
         elif word in ['kill', 'murder', 'death', 'suicide', 'bomb', 'explode']:
             offense_score += 40  # High severity violence
@@ -265,29 +267,25 @@ def detect_spam_patterns(text):
             spam_score += score
             details[description] = True
     
-    # Medical and pharmaceutical keywords
-    medical_keywords = ['viagra', 'cialis', 'pharmacy', 'medication', 'prescription', 'drug', 'pill', 'tablet', 'capsule']
-    medical_found = [word for word in medical_keywords if word in text_lower]
-    if medical_found:
-        spam_patterns.append('Medical/pharmaceutical keywords')
-        spam_score += len(medical_found) * 10
-        details['Medical keywords'] = medical_found
+    # Enhanced spam keyword detection using normalized list
+    spam_keywords_found = []
+    for keyword in SPAM_KEYWORDS:
+        # Check for exact word matches
+        pattern = r'\b' + re.escape(keyword.lower()) + r'\b'
+        if re.search(pattern, text_lower):
+            spam_keywords_found.append(keyword)
     
-    # Gambling keywords
-    gambling_keywords = ['casino', 'gambling', 'bet', 'poker', 'slots', 'lottery', 'jackpot', 'win big', 'lucky']
-    gambling_found = [word for word in gambling_keywords if word in text_lower]
-    if gambling_found:
-        spam_patterns.append('Gambling keywords')
-        spam_score += len(gambling_found) * 10
-        details['Gambling keywords'] = gambling_found
+    if spam_keywords_found:
+        spam_patterns.append('Spam keywords detected')
+        spam_score += len(spam_keywords_found) * 8
+        details['Spam keywords'] = spam_keywords_found[:10]  # Limit to first 10 for display
     
-    # Promotional keywords
-    promo_keywords = ['special offer', 'discount', 'sale', 'promotion', 'deal', 'bargain', 'cheap', 'affordable']
-    promo_found = [phrase for phrase in promo_keywords if phrase in text_lower]
-    if promo_found:
-        spam_patterns.append('Promotional keywords')
-        spam_score += len(promo_found) * 8
-        details['Promotional keywords'] = promo_found
+    # Enhanced spam pattern detection using comprehensive patterns
+    for pattern, description, score in SPAM_PATTERNS:
+        if re.search(pattern, text_lower):
+            spam_patterns.append(description)
+            spam_score += score
+            details[description] = True
     
     return {
         'is_spam_pattern': len(spam_patterns) > 0,
@@ -357,12 +355,15 @@ def risk_assessment_engine(text):
     ml_classification = "SAFE"
     if USE_ML and vectorizer is not None and ensemble_model is not None and label_encoder is not None:
         try:
+            print(f"🔍 ML Prediction Debug - Input text: '{text}'")
             # Preprocess text exactly like the test script
             text_clean = re.sub(r'[^a-zA-Z\s]', '', text.lower())
+            print(f"🔍 ML Prediction Debug - Cleaned text: '{text_clean}'")
             
             # TF-IDF transformation (only TF-IDF features, no numerical features)
             text_tfidf = vectorizer.transform([text_clean])
             text_tfidf_dense = text_tfidf.toarray()
+            print(f"🔍 ML Prediction Debug - TF-IDF shape: {text_tfidf_dense.shape}")
             
             # Use only TF-IDF features to match training pipeline
             text_vector = text_tfidf_dense
@@ -372,6 +373,9 @@ def risk_assessment_engine(text):
             ml_probabilities = ensemble_model.predict_proba(text_vector)[0]
             ml_confidence = float(max(ml_probabilities))
             ml_classification = label_encoder.inverse_transform([ml_prediction])[0].upper()
+            
+            print(f"🔍 ML Prediction Debug - Prediction: {ml_prediction}, Probabilities: {ml_probabilities}")
+            print(f"🔍 ML Prediction Debug - Classification: {ml_classification}, Confidence: {ml_confidence}")
             
             # Get toxic probability (index 1 for toxic class)
             if len(ml_probabilities) >= 2:
@@ -391,33 +395,27 @@ def risk_assessment_engine(text):
     offensive_result = check_offensive_keywords(text)
     spam_result = detect_spam_patterns(text)
     
-    # Calculate rule-based toxic score (recalibrated for fewer false positives)
+    # Calculate rule-based toxic score using actual offensive_score
     rule_toxic_score = 0.0
     if offensive_result['is_offensive']:
-        offensive_words = set(offensive_result['offensive_words'])
-        abbrev_count = len(offensive_result['found_abbreviations'])
-
-        severe_slurs = {
-            'nigger','nigga','chink','kike','spic','wetback','towelhead','gook','jap','slant',
-            'redskin','savage','coon','porch monkey','tar baby','house nigger','field nigger'
-        }
-        profanity = {'fuck','shit','bitch','asshole','bastard','cunt','pussy','dick'}
-        violence = {'kill','murder','suicide','bomb','explode','stab','shoot'}
-        hate_terms = {'racist','sexist','homophobic','hate'}
-
-        num_severe = len(offensive_words.intersection(severe_slurs))
-        num_profanity = len(offensive_words.intersection(profanity))
-        num_violence = len(offensive_words.intersection(violence))
-        num_hate = len(offensive_words.intersection(hate_terms))
-
-        if num_severe > 0:
-            rule_toxic_score = 0.95  # very high
-        elif num_violence >= 1:
-            rule_toxic_score = 0.80
-        elif (num_profanity >= 1) or (num_hate >= 1) or (abbrev_count >= 1):
-            rule_toxic_score = 0.60
+        offensive_score = offensive_result['offense_score']
+        
+        # Convert offensive_score to toxic_score (0.0 to 1.0)
+        # Special case: if "fuck" is detected (150+ points), auto-toxic
+        if offensive_score >= 150:
+            rule_toxic_score = 0.95  # Very high toxic score for "fuck" override
+        elif offensive_score >= 100:
+            rule_toxic_score = 0.90  # High toxic score
+        elif offensive_score >= 50:
+            rule_toxic_score = 0.80  # Medium-high toxic score
+        elif offensive_score >= 30:
+            rule_toxic_score = 0.70  # Medium toxic score
+        elif offensive_score >= 20:
+            rule_toxic_score = 0.60  # Low-medium toxic score
+        elif offensive_score >= 10:
+            rule_toxic_score = 0.50  # Low toxic score
         else:
-            rule_toxic_score = 0.0
+            rule_toxic_score = 0.30  # Minimal toxic score
     
     # Step 3: Spam detection (100% rule-based)
     is_spam = spam_result['is_spam_pattern'] and spam_result['spam_score'] >= 10
@@ -431,9 +429,13 @@ def risk_assessment_engine(text):
     
     # Step 4: Weighted toxic score combining ML and rule-based detection
     if USE_ML:
-        # ML-focused approach: 70% ML, 30% rule-based for toxic/safe detection
-        # ML model is more accurate, rule-based catches explicit content
-        weighted_toxic_score = (0.7 * ml_toxic_score) + (0.3 * rule_toxic_score)
+        # Special override: if rule-based score is very high (0.9+), override ML model
+        if rule_toxic_score >= 0.90:
+            weighted_toxic_score = rule_toxic_score  # Use rule-based score directly
+        else:
+            # ML-focused approach: 70% ML, 30% rule-based for toxic/safe detection
+            # ML model is more accurate, rule-based catches explicit content
+            weighted_toxic_score = (0.7 * ml_toxic_score) + (0.3 * rule_toxic_score)
     else:
         weighted_toxic_score = rule_toxic_score
 
@@ -501,7 +503,84 @@ def risk_assessment_engine(text):
 @app.route('/')
 def index():
     """Serve the main page."""
-    return render_template('index.html')
+    return '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Content Moderation AI</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+            .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            h1 { color: #333; text-align: center; }
+            .form-group { margin: 20px 0; }
+            textarea { width: 100%; height: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+            button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+            button:hover { background: #0056b3; }
+            .result { margin-top: 20px; padding: 15px; border-radius: 5px; }
+            .safe { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+            .toxic { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+            .spam { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🤖 Content Moderation AI</h1>
+            <p>Enter text below to analyze for toxicity, spam, and inappropriate content:</p>
+            
+            <div class="form-group">
+                <textarea id="textInput" placeholder="Enter text to analyze..."></textarea>
+            </div>
+            
+            <button onclick="analyzeText()">Analyze Text</button>
+            
+            <div id="result"></div>
+        </div>
+
+        <script>
+            async function analyzeText() {
+                const text = document.getElementById('textInput').value;
+                const resultDiv = document.getElementById('result');
+                
+                if (!text.trim()) {
+                    resultDiv.innerHTML = '<div class="result" style="background: #f8d7da; color: #721c24;">Please enter some text to analyze.</div>';
+                    return;
+                }
+                
+                resultDiv.innerHTML = '<div class="result">Analyzing...</div>';
+                
+                try {
+                    const response = await fetch('/api/analyze', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ text: text })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        const classification = data.classification.toLowerCase();
+                        const confidence = (data.confidence * 100).toFixed(1);
+                        
+                        resultDiv.innerHTML = `
+                            <div class="result ${classification}">
+                                <h3>Classification: ${data.classification}</h3>
+                                <p><strong>Confidence:</strong> ${confidence}%</p>
+                                <p><strong>Explanation:</strong> ${data.explanation}</p>
+                            </div>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = '<div class="result" style="background: #f8d7da; color: #721c24;">Error: ' + data.error + '</div>';
+                    }
+                } catch (error) {
+                    resultDiv.innerHTML = '<div class="result" style="background: #f8d7da; color: #721c24;">Error analyzing text: ' + error.message + '</div>';
+                }
+            }
+        </script>
+    </body>
+    </html>
+    '''
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze_text():
@@ -560,7 +639,8 @@ def health_check():
     return jsonify({
         'status': 'healthy',
         'message': 'Risk Assessment Engine is running',
-        'models_loaded': all([ensemble_model, vectorizer, label_encoder, numerical_features, toxicity_threshold]) if USE_ML else False,
+        'models_loaded': all([ensemble_model is not None, vectorizer is not None, label_encoder is not None, 
+                              numerical_features is not None, toxicity_threshold is not None]) if USE_ML else False,
         'ml_enabled': USE_ML,
         'model_info': {
             'ensemble_model': ensemble_model is not None,
