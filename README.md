@@ -1,5 +1,7 @@
 # Content Moderation AI System
 
+[Live Demo](http://cmod.vvw.lol) · [API Health](http://cmod.vvw.lol/api/health)
+
 A comprehensive, production-ready Content Moderation System that classifies text into 'Safe', 'Toxic', or 'Spam' categories using advanced machine learning (70% weight) and rule-based detection (30% weight).
 
 ## 🎯 Project Overview
@@ -10,6 +12,10 @@ This system combines:
 - **Production-ready Flask API** with React frontend
 - **Real-time web application** with detailed risk assessment
 - **Free deployment ready** for Railway, Render, Heroku, etc.
+
+## 🌐 Live Deployment
+- App: http://cmod.vvw.lol
+- Health: http://cmod.vvw.lol/api/health
 
 ## 📁 Project Structure
 
@@ -118,19 +124,6 @@ python app.py
 - **Ensemble voting** for improved accuracy
 - **Cross-validation** for reliable performance metrics
 - **Feature engineering** with TF-IDF and text statistics
-
-### Risk Assessment
-- **Hybrid approach** combining rules and ML
-- **Weighted scoring** system
-- **Risk thresholds** for different categories
-- **Detailed reasoning** for decisions
-
-### Web Interface
-- **Modern, responsive design**
-- **Real-time analysis** with instant results
-- **Visual indicators** for different risk levels
-- **Expandable sections** for detailed analysis
-- **Highlighted text** showing problematic content
 
 ## 📈 Performance
 
